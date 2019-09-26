@@ -1,23 +1,25 @@
 const express = require('express')
+var bodyParser = require('body-parser')
+var db = require('./dbMethods')
+
 const app = express()
-const port = 3000
+const port = 5555
 
-app.get('/', getMessage)
-app.post('/', saveMessage)
+app.use(bodyParser.json())
 
+app.get('/dictionary/:word', getMeaning)
+app.post('/dictionary/:word', setMeaning)
 
-let message = "Default message"
-
-function getMessage(req, res) {
-    res.send(message) 
+async function getMeaning(req, res) {
+    var row = await db.getWord(req.params.word)    
+    res.send(row) 
 }
 
-function saveMessage(req, res) {
-    console.log("We are in Save message")
-    console.log(req.query.message)
+async function setMeaning(req, res) {
+    console.log( req.body )
 
-    message = req.query.message
-    res.send(message) 
+    var row = await db.saveWord(req.params.word, req.body.meaning)
+    res.send(row) 
 }
 
 
